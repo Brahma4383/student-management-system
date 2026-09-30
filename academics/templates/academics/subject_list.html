@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Subjects{% endblock %}
+{% block page_title %}Subjects{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h2>Subjects ({{ subjects|length }})</h2>
+    <a href="{% url 'academics:subject_create' %}" class="btn">+ Add subject</a>
+  </div>
+  {% if subjects %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Code</th><th>Class</th><th></th></tr></thead>
+      <tbody>
+      {% for s in subjects %}
+        <tr>
+          <td>{{ s.name }}</td>
+          <td>{{ s.code }}</td>
+          <td>{{ s.school_class }}</td>
+          <td>
+            <div class="btn-row">
+              <a href="{% url 'academics:subject_edit' s.pk %}" class="btn btn--secondary btn--sm">Edit</a>
+              <a href="{% url 'academics:subject_delete' s.pk %}" class="btn btn--danger btn--sm">Delete</a>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="empty-state">No subjects yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

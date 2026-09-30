@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Bulk upload attendance{% endblock %}
+{% block page_title %}Bulk upload attendance{% endblock %}
+{% block content %}
+<div class="card form-card">
+  <h3>Upload a CSV</h3>
+  <p class="muted">
+    Columns required: <code>admission_number,status</code> (status is one of PRESENT, ABSENT, LATE, EXCUSED).
+    Pick a subject and section first on the <a href="{% url 'attendance:mark' %}">mark attendance</a> page and use
+    "Download roster CSV" to get a pre-filled template for that section.
+  </p>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% include "partials/form_fields.html" %}
+    <div class="btn-row">
+      <button type="submit" class="btn">Upload</button>
+    </div>
+  </form>
+</div>
+
+{% if result %}
+<div class="card">
+  <h3>Result</h3>
+  <p>{{ result.created }} record(s) created, {{ result.updated }} updated.</p>
+  {% if result.errors %}
+    <p class="badge badge--danger">{{ result.errors|length }} row(s) had problems</p>
+    <ul>
+      {% for e in result.errors %}<li class="muted">{{ e }}</li>{% endfor %}
+    </ul>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

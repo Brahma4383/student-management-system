@@ -1,0 +1,6 @@
+{% for message in thread %}
+  <div class="msg-bubble {% if message.sender == request.user %}mine{% else %}theirs{% endif %}" data-id="{{ message.id }}">
+    {{ message.body }}
+    <span class="msg-time">{{ message.timestamp|date:"M j, H:i" }}</span>
+  </div>
+{% endfor %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{% if mode == 'create' %}Add exam{% else %}Edit exam{% endif %}{% endblock %}
+{% block page_title %}{% if mode == 'create' %}Add exam{% else %}Edit exam{% endif %}{% endblock %}
+{% block content %}
+<div class="card form-card">
+  <form method="post">
+    {% csrf_token %}
+    {% include "partials/form_fields.html" %}
+    <div class="btn-row">
+      <button type="submit" class="btn">Save</button>
+      <a href="{% url 'results:exam_list' %}" class="btn btn--secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

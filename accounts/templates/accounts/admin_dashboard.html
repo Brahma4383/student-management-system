@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Admin dashboard{% endblock %}
+{% block page_title %}Admin dashboard{% endblock %}
+{% block content %}
+
+<div class="institute-banner">
+  <span class="institute-banner-crest">NH</span>
+  <div class="institute-banner-text">
+    <h1>New Horizon Institute of Technology and Management</h1>
+    <p>Administration console &middot; manage teachers, students, classes and academic records.</p>
+  </div>
+</div>
+
+<div class="grid grid-cols-4 section-block">
+  <div class="stat-card">
+    <div class="stat-label">Teachers</div>
+    <div class="stat-value">{{ teacher_count }}</div>
+    <div class="stat-sub"><a href="{% url 'accounts:teacher_list' %}">Manage teachers</a></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Students</div>
+    <div class="stat-value">{{ student_count }}</div>
+    <div class="stat-sub"><a href="{% url 'accounts:student_list' %}">Manage students</a></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Classes / Sections</div>
+    <div class="stat-value">{{ class_count }} / {{ section_count }}</div>
+    <div class="stat-sub"><a href="{% url 'academics:class_list' %}">Manage classes</a></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Subjects</div>
+    <div class="stat-value">{{ subject_count }}</div>
+    <div class="stat-sub"><a href="{% url 'academics:subject_list' %}">Manage subjects</a></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Assignments posted</div>
+    <div class="stat-value">{{ assignment_count }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Attendance records</div>
+    <div class="stat-value">{{ attendance_count }}</div>
+    <div class="stat-sub"><a href="{% url 'attendance:admin_overview' %}">View attendance</a></div>
+  </div>
+</div>
+
+<div class="grid grid-cols-2">
+  <div class="card">
+    <div class="card-header">
+      <h3>Recently added teachers</h3>
+      <a href="{% url 'accounts:teacher_create' %}" class="btn btn--sm">+ Add teacher</a>
+    </div>
+    {% if recent_teachers %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Username</th><th>Department</th></tr></thead>
+          <tbody>
+          {% for t in recent_teachers %}
+            <tr>
+              <td>{{ t.get_full_name|default:t.username }}</td>
+              <td>{{ t.username }}</td>
+              <td>{{ t.teacher_profile.department|default:"-" }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state">No teachers yet.</div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3>Recently added students</h3>
+      <a href="{% url 'accounts:student_create' %}" class="btn btn--sm">+ Add student</a>
+    </div>
+    {% if recent_students %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Admission #</th><th>Section</th></tr></thead>
+          <tbody>
+          {% for s in recent_students %}
+            <tr>
+              <td>{{ s.get_full_name|default:s.username }}</td>
+              <td>{{ s.student_profile.admission_number|default:"-" }}</td>
+              <td>{{ s.student_profile.section|default:"-" }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state">No students yet.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

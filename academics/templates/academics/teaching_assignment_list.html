@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Teaching assignments{% endblock %}
+{% block page_title %}Teaching assignments{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h2>Who teaches what ({{ assignments|length }})</h2>
+    <a href="{% url 'academics:teaching_assignment_create' %}" class="btn">+ Assign teacher</a>
+  </div>
+  <p class="muted">A teacher only sees subjects/sections here when marking attendance, entering results or posting assignments.</p>
+  {% if assignments %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Teacher</th><th>Subject</th><th>Section</th><th></th></tr></thead>
+      <tbody>
+      {% for a in assignments %}
+        <tr>
+          <td>{{ a.teacher.get_full_name|default:a.teacher.username }}</td>
+          <td>{{ a.subject }}</td>
+          <td>{{ a.section }}</td>
+          <td><a href="{% url 'academics:teaching_assignment_delete' a.pk %}" class="btn btn--danger btn--sm">Remove</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="empty-state">No teaching assignments yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

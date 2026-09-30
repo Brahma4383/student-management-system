@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{% if mode == 'create' %}New assignment{% else %}Edit assignment{% endif %}{% endblock %}
+{% block page_title %}{% if mode == 'create' %}New assignment{% else %}Edit assignment{% endif %}{% endblock %}
+{% block content %}
+<div class="card form-card">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% include "partials/form_fields.html" %}
+    <div class="btn-row">
+      <button type="submit" class="btn">{% if mode == 'create' %}Post assignment{% else %}Save changes{% endif %}</button>
+      <a href="{% url 'assignments:teacher_list' %}" class="btn btn--secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

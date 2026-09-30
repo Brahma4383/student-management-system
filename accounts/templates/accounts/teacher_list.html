@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Teachers{% endblock %}
+{% block page_title %}Teachers{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h2>Teachers ({{ teachers|length }})</h2>
+    <a href="{% url 'accounts:teacher_create' %}" class="btn">+ Add teacher</a>
+  </div>
+  <form method="get" class="inline-form section-block">
+    <div class="field">
+      <label for="q">Search</label>
+      <input class="input" type="text" id="q" name="q" value="{{ query }}" placeholder="Name or username">
+    </div>
+    <button type="submit" class="btn btn--secondary">Search</button>
+  </form>
+
+  {% if teachers %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Username</th><th>Employee ID</th><th>Department</th><th>Email</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+      {% for t in teachers %}
+        <tr>
+          <td>{{ t.get_full_name|default:"-" }}</td>
+          <td>{{ t.username }}</td>
+          <td>{{ t.teacher_profile.employee_id|default:"-" }}</td>
+          <td>{{ t.teacher_profile.department|default:"-" }}</td>
+          <td>{{ t.email|default:"-" }}</td>
+          <td>{% if t.is_active %}<span class="badge badge--success">Active</span>{% else %}<span class="badge badge--muted">Inactive</span>{% endif %}</td>
+          <td>
+            <div class="btn-row">
+              <a href="{% url 'accounts:teacher_edit' t.pk %}" class="btn btn--secondary btn--sm">Edit</a>
+              <a href="{% url 'accounts:teacher_reset_password' t.pk %}" class="btn btn--secondary btn--sm">Reset password</a>
+              <a href="{% url 'accounts:teacher_delete' t.pk %}" class="btn btn--danger btn--sm">Delete</a>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="empty-state">No teachers found.</div>
+  {% endif %}
+</div>
+{% endblock %}

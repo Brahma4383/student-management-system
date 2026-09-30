@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Attendance overview{% endblock %}
+{% block page_title %}Attendance overview{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-header"><h2>Attendance records</h2></div>
+  <form method="get" class="inline-form section-block">
+    <div class="field">
+      <label for="section">Section</label>
+      <select class="input" id="section" name="section">
+        <option value="">All sections</option>
+        {% for s in sections %}
+          <option value="{{ s.pk }}" {% if selected_section == s.pk|stringformat:"s" %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label for="date">Date</label>
+      <input class="input" type="date" id="date" name="date" value="{{ selected_date }}">
+    </div>
+    <button type="submit" class="btn btn--secondary">Filter</button>
+  </form>
+
+  {% if records %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Student</th><th>Section</th><th>Subject</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for r in records %}
+        <tr>
+          <td>{{ r.date }}</td>
+          <td>{{ r.student.get_full_name|default:r.student.username }}</td>
+          <td>{{ r.student.student_profile.section|default:"-" }}</td>
+          <td>{{ r.subject }}</td>
+          <td>
+            {% if r.status == 'PRESENT' %}<span class="badge badge--success">Present</span>
+            {% elif r.status == 'ABSENT' %}<span class="badge badge--danger">Absent</span>
+            {% elif r.status == 'LATE' %}<span class="badge badge--warning">Late</span>
+            {% else %}<span class="badge badge--info">Excused</span>{% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="muted">Showing up to 300 most recent matching records.</p>
+  {% else %}
+    <div class="empty-state">No attendance records match this filter.</div>
+  {% endif %}
+</div>
+{% endblock %}

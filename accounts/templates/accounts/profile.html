@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}My profile{% endblock %}
+{% block page_title %}My profile{% endblock %}
+{% block content %}
+<div class="grid grid-cols-2">
+  <div class="card form-card">
+    <h3>Profile details</h3>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {% include "partials/form_fields.html" %}
+      <div class="btn-row">
+        <button type="submit" class="btn">Save changes</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card form-card">
+    <h3>Account</h3>
+    <table>
+      <tr><th>Username</th><td>{{ user.username }}</td></tr>
+      <tr><th>Role</th><td><span class="role-badge role-badge--{{ user.role|lower }}">{{ user.get_role_display }}</span></td></tr>
+      <tr><th>Current password</th><td><code>{{ user.password }}</code></td></tr>
+      {% if user.is_student %}
+        <tr><th>Admission #</th><td>{{ user.student_profile.admission_number }}</td></tr>
+        <tr><th>Section</th><td>{{ user.student_profile.section|default:"Not assigned" }}</td></tr>
+      {% elif user.is_teacher %}
+        <tr><th>Employee ID</th><td>{{ user.teacher_profile.employee_id }}</td></tr>
+        <tr><th>Department</th><td>{{ user.teacher_profile.department|default:"-" }}</td></tr>
+      {% endif %}
+    </table>
+    <p class="help-text">Passwords in this system are stored as plain text, not encrypted - that's why yours is visible here.</p>
+    <a href="{% url 'accounts:change_password' %}" class="btn btn--secondary">Change password</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ assignment.title }} · submissions{% endblock %}
+{% block page_title %}Submissions{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>{{ assignment.title }}</h2>
+  <p class="muted">{{ assignment.subject }} · {{ assignment.section }} · Due {{ assignment.due_date }}</p>
+  {% if assignment.description %}<p>{{ assignment.description }}</p>{% endif %}
+  {% if assignment.attachment %}<p><a href="{{ assignment.attachment.url }}" target="_blank">Download attachment</a></p>{% endif %}
+</div>
+
+<div class="card">
+  <h3>Submitted ({{ submissions|length }})</h3>
+  {% if submissions %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Student</th><th>Submitted</th><th>Status</th><th>Grade</th><th></th></tr></thead>
+      <tbody>
+      {% for s in submissions %}
+        <tr>
+          <td>{{ s.student.get_full_name|default:s.student.username }}</td>
+          <td>{{ s.submitted_at }} {% if s.is_late %}<span class="badge badge--warning">Late</span>{% endif %}</td>
+          <td>{% if s.is_graded %}<span class="badge badge--success">Graded</span>{% else %}<span class="badge badge--muted">Pending</span>{% endif %}</td>
+          <td>{{ s.grade|default:"-" }}</td>
+          <td>
+            <div class="btn-row">
+              {% if s.submitted_file %}<a href="{{ s.submitted_file.url }}" target="_blank" class="btn btn--secondary btn--sm">File</a>{% endif %}
+              <a href="{% url 'assignments:grade' s.pk %}" class="btn btn--sm">{% if s.is_graded %}Update grade{% else %}Grade{% endif %}</a>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="empty-state">No submissions yet.</div>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3>Not yet submitted ({{ pending_students|length }})</h3>
+  {% if pending_students %}
+    <ul>
+      {% for p in pending_students %}<li>{{ p.user.get_full_name|default:p.user.username }} ({{ p.admission_number }})</li>{% endfor %}
+    </ul>
+  {% else %}
+    <p class="muted">Everyone has submitted.</p>
+  {% endif %}
+</div>
+{% endblock %}

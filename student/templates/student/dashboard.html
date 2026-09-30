@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Student dashboard{% endblock %}
+{% block page_title %}Welcome, {{ user.get_full_name|default:user.username }}{% endblock %}
+{% block content %}
+
+<div class="institute-banner">
+  <span class="institute-banner-crest">NH</span>
+  <div class="institute-banner-text">
+    <h1>New Horizon Institute of Technology and Management</h1>
+    <p>Welcome back, {{ user.get_full_name|default:user.username }} &middot; track your assignments, attendance and results here.</p>
+  </div>
+</div>
+
+{% if not profile.section %}
+<div class="alert alert--warning section-block">
+  You haven't been assigned to a section yet. Some features (assignments, results) will be empty until an admin does this.
+</div>
+{% endif %}
+
+<div class="grid grid-cols-4 section-block">
+  <div class="stat-card">
+    <div class="stat-label">Attendance</div>
+    <div class="stat-value">{% if attendance_percentage is not None %}{{ attendance_percentage }}%{% else %}-{% endif %}</div>
+    <div class="stat-sub"><a href="{% url 'attendance:student_view' %}">View details</a></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Latest exam average</div>
+    <div class="stat-value">{% if latest_percentage is not None %}{{ latest_percentage }}%{% else %}-{% endif %}</div>
+    <div class="stat-sub">
+      {% if improvement is not None %}
+        {% if improvement > 0 %}<span style="color:var(--success)">&#9650; {{ improvement }}% improvement</span>
+        {% elif improvement < 0 %}<span style="color:var(--danger)">&#9660; {{ improvement|cut:"-" }}% drop</span>
+        {% else %}No change{% endif %}
+      {% else %}<a href="{% url 'results:student_results' %}">View results</a>{% endif %}
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Upcoming assignments</div>
+    <div class="stat-value">{{ upcoming_assignments|length }}</div>
+    <div class="stat-sub"><a href="{% url 'assignments:student_list' %}">View all</a></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Messages</div>
+    <div class="stat-value">{{ unread_messages }}</div>
+    <div class="stat-sub">{{ friend_count }} friend(s) · <a href="{% url 'chat:inbox' %}">Open chat</a></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3>Upcoming assignments</h3>
+    <a href="{% url 'assignments:student_list' %}" class="btn btn--secondary btn--sm">View all</a>
+  </div>
+  {% if upcoming_assignments %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Title</th><th>Subject</th><th>Due</th><th></th></tr></thead>
+        <tbody>
+        {% for a in upcoming_assignments %}
+          <tr>
+            <td>{{ a.title }}</td>
+            <td>{{ a.subject }}</td>
+            <td>{{ a.due_date }}</td>
+            <td><a href="{% url 'assignments:submit' a.pk %}" class="btn btn--sm">Submit</a></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">Nothing due right now. Nicely done.</div>
+  {% endif %}
+</div>
+{% endblock %}

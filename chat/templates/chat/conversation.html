@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ friend.get_full_name|default:friend.username }}{% endblock %}
+{% block page_title %}Chat with {{ friend.get_full_name|default:friend.username }}{% endblock %}
+{% block content %}
+<div class="card" style="padding: 0; overflow: hidden;">
+  <div class="chat-window">
+    <div class="chat-thread" id="chat-thread" data-last-id="{{ thread.last.id|default:0 }}"
+         data-poll-url="{% url 'chat:poll_messages' friend.pk %}">
+      {% include "chat/_messages.html" %}
+    </div>
+    <form method="post" class="chat-composer">
+      {% csrf_token %}
+      <input class="input" type="text" name="body" placeholder="Type a message..." autocomplete="off" autofocus required>
+      <button type="submit" class="btn">Send</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  var threadEl = document.getElementById('chat-thread');
+  if (!threadEl) return;
+
+  function scrollToBottom() { threadEl.scrollTop = threadEl.scrollHeight; }
+  scrollToBottom();
+
+  function poll() {
+    var lastId = threadEl.getAttribute('data-last-id') || '0';
+    fetch(threadEl.getAttribute('data-poll-url') + '?after=' + lastId, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+    })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data || !data.count) return;
+        threadEl.insertAdjacentHTML('beforeend', data.html);
+        threadEl.setAttribute('data-last-id', data.last_id);
+        scrollToBottom();
+      })
+      .catch(function () { /* silently retry on next tick */ });
+  }
+
+  setInterval(poll, 4000);
+})();
+</script>
+{% endblock %}

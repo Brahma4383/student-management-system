@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Results overview{% endblock %}
+{% block page_title %}Results overview{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-header"><h2>Results</h2></div>
+  <form method="get" class="inline-form section-block">
+    <div class="field">
+      <label for="section">Section</label>
+      <select class="input" id="section" name="section">
+        <option value="">All sections</option>
+        {% for s in sections %}
+          <option value="{{ s.pk }}" {% if selected_section == s.pk|stringformat:"s" %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label for="exam">Exam</label>
+      <select class="input" id="exam" name="exam">
+        <option value="">All exams</option>
+        {% for e in exams %}
+          <option value="{{ e.pk }}" {% if selected_exam == e.pk|stringformat:"s" %}selected{% endif %}>{{ e }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn btn--secondary">Filter</button>
+  </form>
+
+  {% if results %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Student</th><th>Section</th><th>Exam</th><th>Subject</th><th>Marks</th><th>%</th></tr></thead>
+      <tbody>
+      {% for r in results %}
+        <tr>
+          <td>{{ r.student.get_full_name|default:r.student.username }}</td>
+          <td>{{ r.student.student_profile.section|default:"-" }}</td>
+          <td>{{ r.exam }}</td>
+          <td>{{ r.subject }}</td>
+          <td>{{ r.marks_obtained }} / {{ r.max_marks }}</td>
+          <td>{{ r.percentage }}%</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="muted">Showing up to 300 most recent matching records.</p>
+  {% else %}
+    <div class="empty-state">No results match this filter.</div>
+  {% endif %}
+</div>
+{% endblock %}

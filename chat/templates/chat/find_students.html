@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Find friends{% endblock %}
+{% block page_title %}Find friends{% endblock %}
+{% block content %}
+<div class="card">
+  <h3>Search for classmates</h3>
+  <form method="get" class="inline-form">
+    <div class="field">
+      <label for="q">Name or username</label>
+      <input class="input" type="text" id="q" name="q" value="{{ query }}" placeholder="Search students" autofocus>
+    </div>
+    <button type="submit" class="btn">Search</button>
+  </form>
+</div>
+
+{% if query %}
+<div class="card">
+  {% if results %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Admission #</th><th></th></tr></thead>
+      <tbody>
+      {% for item in results %}
+        <tr>
+          <td>{{ item.student.get_full_name|default:item.student.username }}</td>
+          <td>{{ item.student.student_profile.admission_number|default:"-" }}</td>
+          <td>
+            {% if item.state == 'accepted' %}
+              <a href="{% url 'chat:conversation' item.student.pk %}" class="btn btn--secondary btn--sm">Message</a>
+            {% elif item.state == 'sent' %}
+              <span class="badge badge--muted">Request sent</span>
+            {% elif item.state == 'incoming' %}
+              <a href="{% url 'chat:friend_requests' %}" class="badge badge--info">Respond to their request</a>
+            {% elif item.state == 'declined' %}
+              <span class="badge badge--muted">Declined</span>
+            {% else %}
+              <form method="post" action="{% url 'chat:send_request' item.student.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn--sm">Add friend</button>
+              </form>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="empty-state">No students found for "{{ query }}".</div>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block guest_content %}
+<div class="login-shell">
+  <div class="login-visual">
+    <div class="login-visual-overlay">
+      <span class="institute-crest">NH</span>
+      <h1 class="institute-name">New Horizon Institute<br>of Technology and Management</h1>
+      <p class="institute-tagline">Excellence in Technology &amp; Management Education</p>
+      <ul class="institute-highlights">
+        <li>&#128218; Assignments &amp; study material, shared instantly</li>
+        <li>&#128197; Attendance tracked in real time</li>
+        <li>&#128202; Results &amp; progress at a glance</li>
+      </ul>
+    </div>
+  </div>
+  <div class="login-panel">
+    <div class="auth-card">
+      <span class="brand-mark">NH</span>
+      <h1>Student Management Portal</h1>
+      <p class="auth-subtitle">Sign in to your admin, teacher or student account.</p>
+      <form method="post">
+        {% csrf_token %}
+        {% include "partials/form_fields.html" %}
+        <button type="submit" class="btn">Log in</button>
+      </form>
+      <div class="demo-creds">
+        Forgot your password? Ask your school admin to reset it from the Teachers/Students panel.
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load assignment_extras %}
+{% block title %}My assignments{% endblock %}
+{% block page_title %}Assignments{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>Assignments ({{ assignments|length }})</h2>
+  {% if assignments %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Title</th><th>Subject</th><th>Due</th><th>Material</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+      {% for a in assignments %}
+        <tr>
+          <td>{{ a.title }}</td>
+          <td>{{ a.subject }}</td>
+          <td>{{ a.due_date }}{% if a.due_date < now %} <span class="badge badge--warning">Past due</span>{% endif %}</td>
+          <td>{% if a.attachment %}<a href="{{ a.attachment.url }}" target="_blank" class="badge badge--info">&#128206; Download</a>{% else %}<span class="badge badge--muted">None</span>{% endif %}</td>
+          <td>
+            {% with submission=my_submissions|get_item:a.id %}
+              {% if submission.is_graded %}
+                <span class="badge badge--success">Graded: {{ submission.grade }}</span>
+              {% elif submission %}
+                <span class="badge badge--info">Submitted</span>
+              {% else %}
+                <span class="badge badge--muted">Not submitted</span>
+              {% endif %}
+            {% endwith %}
+          </td>
+          <td><a href="{% url 'assignments:submit' a.pk %}" class="btn btn--sm">Open</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="empty-state">No assignments posted for your section yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

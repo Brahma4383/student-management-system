@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Messages{% endblock %}
+{% block page_title %}Messages{% endblock %}
+{% block content %}
+<div class="card-header">
+  <h2>Chats</h2>
+  <a href="{% url 'chat:find_students' %}" class="btn btn--secondary btn--sm">Find friends</a>
+</div>
+
+{% if friend_data %}
+  <div class="chat-list" style="width: 100%; max-width: 480px;">
+    {% for item in friend_data %}
+      <a href="{% url 'chat:conversation' item.friend.pk %}" class="chat-list-item">
+        <div class="avatar">{{ item.friend.first_name|default:item.friend.username|first|upper }}</div>
+        <div style="flex:1; min-width:0;">
+          <div class="chat-list-name">{{ item.friend.get_full_name|default:item.friend.username }}</div>
+          <div class="chat-list-preview">{% if item.last_message %}{{ item.last_message.body }}{% else %}Say hi!{% endif %}</div>
+        </div>
+        {% if item.unread %}<span class="badge badge--info">{{ item.unread }}</span>{% endif %}
+      </a>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    No friends yet. <a href="{% url 'chat:find_students' %}">Find classmates to chat with</a>.
+  </div>
+{% endif %}
+{% endblock %}

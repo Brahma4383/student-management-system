@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+{% block page_title %}Students{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h2>Students ({{ students|length }})</h2>
+    <a href="{% url 'accounts:student_create' %}" class="btn">+ Add student</a>
+  </div>
+  <form method="get" class="inline-form section-block">
+    <div class="field">
+      <label for="q">Search</label>
+      <input class="input" type="text" id="q" name="q" value="{{ query }}" placeholder="Name, username or admission #">
+    </div>
+    <div class="field">
+      <label for="section">Section</label>
+      <select class="input" id="section" name="section">
+        <option value="">All sections</option>
+        {% for s in sections %}
+          <option value="{{ s.pk }}" {% if selected_section == s.pk|stringformat:"s" %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn btn--secondary">Filter</button>
+  </form>
+
+  {% if students %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Username</th><th>Admission #</th><th>Section</th><th>Guardian</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+      {% for s in students %}
+        <tr>
+          <td>{{ s.get_full_name|default:"-" }}</td>
+          <td>{{ s.username }}</td>
+          <td>{{ s.student_profile.admission_number|default:"-" }}</td>
+          <td>{{ s.student_profile.section|default:"-" }}</td>
+          <td>{{ s.student_profile.guardian_name|default:"-" }}</td>
+          <td>{% if s.is_active %}<span class="badge badge--success">Active</span>{% else %}<span class="badge badge--muted">Inactive</span>{% endif %}</td>
+          <td>
+            <div class="btn-row">
+              <a href="{% url 'accounts:student_edit' s.pk %}" class="btn btn--secondary btn--sm">Edit</a>
+              <a href="{% url 'accounts:student_reset_password' s.pk %}" class="btn btn--secondary btn--sm">Reset password</a>
+              <a href="{% url 'accounts:student_delete' s.pk %}" class="btn btn--danger btn--sm">Delete</a>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="empty-state">No students found.</div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Teacher dashboard{% endblock %}
+{% block page_title %}Welcome, {{ user.get_full_name|default:user.username }}{% endblock %}
+{% block content %}
+
+<div class="institute-banner">
+  <span class="institute-banner-crest">NH</span>
+  <div class="institute-banner-text">
+    <h1>New Horizon Institute of Technology and Management</h1>
+    <p>Welcome back, {{ user.get_full_name|default:user.username }} &middot; here's what your students need from you today.</p>
+  </div>
+</div>
+
+<div class="grid grid-cols-4 section-block">
+  <div class="stat-card">
+    <div class="stat-label">Sections taught</div>
+    <div class="stat-value">{{ section_count }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Subjects taught</div>
+    <div class="stat-value">{{ subject_count }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Assignments posted</div>
+    <div class="stat-value">{{ assignment_count }}</div>
+    <div class="stat-sub"><a href="{% url 'assignments:teacher_list' %}">View all</a></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Submissions to grade</div>
+    <div class="stat-value">{{ pending_grading_count }}</div>
+  </div>
+</div>
+
+<div class="grid grid-cols-2">
+  <div class="card">
+    <h3>My teaching assignments</h3>
+    {% if teaching_assignments %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Subject</th><th>Section</th></tr></thead>
+          <tbody>
+          {% for a in teaching_assignments %}
+            <tr><td>{{ a.subject }}</td><td>{{ a.section }}</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state">You haven't been assigned any subjects yet. Ask an admin to set this up.</div>
+    {% endif %}
+    <div class="btn-row">
+      <a href="{% url 'attendance:mark' %}" class="btn btn--secondary btn--sm">Mark attendance</a>
+      <a href="{% url 'attendance:bulk_upload' %}" class="btn btn--secondary btn--sm">Bulk upload attendance</a>
+      <a href="{% url 'results:entry' %}" class="btn btn--secondary btn--sm">Enter results</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3>Submissions awaiting grading</h3>
+    </div>
+    {% if pending_grading %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Student</th><th>Assignment</th><th></th></tr></thead>
+          <tbody>
+          {% for s in pending_grading %}
+            <tr>
+              <td>{{ s.student.get_full_name|default:s.student.username }}</td>
+              <td>{{ s.assignment.title }}</td>
+              <td><a href="{% url 'assignments:grade' s.pk %}" class="btn btn--sm">Grade</a></td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state">Nothing pending. You're all caught up.</div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3>Recent assignments</h3>
+    <a href="{% url 'assignments:create' %}" class="btn btn--sm">+ New assignment</a>
+  </div>
+  {% if recent_assignments %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Title</th><th>Subject</th><th>Section</th><th>Due</th></tr></thead>
+        <tbody>
+        {% for a in recent_assignments %}
+          <tr>
+            <td><a href="{% url 'assignments:submissions' a.pk %}">{{ a.title }}</a></td>
+            <td>{{ a.subject }}</td>
+            <td>{{ a.section }}</td>
+            <td>{{ a.due_date }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">No assignments posted yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

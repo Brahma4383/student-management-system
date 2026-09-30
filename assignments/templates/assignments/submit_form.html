@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ assignment.title }}{% endblock %}
+{% block page_title %}{{ assignment.title }}{% endblock %}
+{% block content %}
+<div class="card">
+  <p class="muted">{{ assignment.subject }} · {{ assignment.section }} · Due {{ assignment.due_date }}</p>
+  {% if assignment.description %}<p>{{ assignment.description }}</p>{% endif %}
+  {% if assignment.attachment %}<p><a href="{{ assignment.attachment.url }}" target="_blank">Download assignment attachment</a></p>{% endif %}
+</div>
+
+<div class="card form-card">
+  <h3>{% if submission %}Your submission{% else %}Submit your work{% endif %}</h3>
+  {% if submission %}
+    <p class="muted">Submitted on {{ submission.submitted_at }}. Re-submitting will replace your previous answer.</p>
+    {% if submission.is_graded %}
+      <p><span class="badge badge--success">Graded: {{ submission.grade }}</span></p>
+      {% if submission.feedback %}<p>{{ submission.feedback }}</p>{% endif %}
+    {% endif %}
+  {% endif %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% include "partials/form_fields.html" %}
+    <div class="btn-row">
+      <button type="submit" class="btn">{% if submission %}Update submission{% else %}Submit{% endif %}</button>
+      <a href="{% url 'assignments:student_list' %}" class="btn btn--secondary">Back</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Mark attendance{% endblock %}
+{% block page_title %}Mark attendance{% endblock %}
+{% block content %}
+<div class="card">
+  <h3>Choose subject, section and date</h3>
+  <form method="get" class="inline-form">
+    {% include "partials/form_fields.html" with form=session_form %}
+    <button type="submit" class="btn">Load students</button>
+    {% if subject and section and attendance_date %}
+      <a href="{% url 'attendance:csv_template' %}?section={{ section.pk }}" class="btn btn--secondary">Download roster CSV</a>
+    {% endif %}
+  </form>
+</div>
+
+{% if students %}
+<div class="card">
+  <div class="card-header">
+    <h3>{{ subject }} · {{ section }} · {{ attendance_date }}</h3>
+    <span class="muted">{{ students|length }} student(s)</span>
+  </div>
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="subject" value="{{ subject.pk }}">
+    <input type="hidden" name="section" value="{{ section.pk }}">
+    <input type="hidden" name="date" value="{{ attendance_date|date:'Y-m-d' }}">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Student</th><th>Admission #</th>{% for value, label in statuses %}<th>{{ label }}</th>{% endfor %}</tr></thead>
+        <tbody>
+        {% for row in students %}
+          <tr>
+            <td>{{ row.profile.user.get_full_name|default:row.profile.user.username }}</td>
+            <td>{{ row.profile.admission_number }}</td>
+            {% for value, label in statuses %}
+              <td>
+                <input type="radio" name="status_{{ row.profile.user_id }}" value="{{ value }}" {% if row.status == value %}checked{% endif %}>
+              </td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="btn-row">
+      <button type="submit" class="btn">Save attendance</button>
+    </div>
+  </form>
+</div>
+{% elif subject %}
+  <div class="empty-state">No students in this section yet.</div>
+{% endif %}
+{% endblock %}

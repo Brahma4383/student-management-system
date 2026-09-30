@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Friend requests{% endblock %}
+{% block page_title %}Friend requests{% endblock %}
+{% block content %}
+
+<div class="card">
+  <h3>Incoming ({{ incoming|length }})</h3>
+  {% if incoming %}
+    {% for r in incoming %}
+      <div class="chat-list-item">
+        <div>
+          <div class="chat-list-name">{{ r.from_user.get_full_name|default:r.from_user.username }}</div>
+          <div class="chat-list-preview">{{ r.created_at }}</div>
+        </div>
+        <div class="btn-row">
+          <form method="post" action="{% url 'chat:respond_request' r.pk 'accept' %}">
+            {% csrf_token %}<button type="submit" class="btn btn--sm">Accept</button>
+          </form>
+          <form method="post" action="{% url 'chat:respond_request' r.pk 'decline' %}">
+            {% csrf_token %}<button type="submit" class="btn btn--secondary btn--sm">Decline</button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">No incoming requests.</div>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3>Sent ({{ outgoing|length }})</h3>
+  {% if outgoing %}
+    {% for r in outgoing %}
+      <div class="chat-list-item">
+        <div class="chat-list-name">{{ r.to_user.get_full_name|default:r.to_user.username }}</div>
+        <span class="badge badge--muted">Pending</span>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">No pending sent requests.</div>
+  {% endif %}
+</div>
+{% endblock %}

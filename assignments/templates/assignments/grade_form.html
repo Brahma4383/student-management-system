@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Grade submission{% endblock %}
+{% block page_title %}Grade submission{% endblock %}
+{% block content %}
+<div class="card form-card">
+  <h3>{{ submission.student.get_full_name|default:submission.student.username }}</h3>
+  <p class="muted">{{ submission.assignment.title }}</p>
+  {% if submission.submission_text %}<p>{{ submission.submission_text }}</p>{% endif %}
+  {% if submission.submitted_file %}<p><a href="{{ submission.submitted_file.url }}" target="_blank">Download submission</a></p>{% endif %}
+  <form method="post">
+    {% csrf_token %}
+    {% include "partials/form_fields.html" %}
+    <div class="btn-row">
+      <button type="submit" class="btn">Save grade</button>
+      <a href="{% url 'assignments:submissions' submission.assignment_id %}" class="btn btn--secondary">Back</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

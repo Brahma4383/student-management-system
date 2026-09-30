@@ -1,0 +1,100 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Student Management{% endblock %} · New Horizon Institute of Technology and Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+{% if user.is_authenticated %}
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand" title="New Horizon Institute of Technology and Management">
+      <span class="brand-mark">NH</span>
+      <span class="brand-text">
+        <span class="brand-name">NHITM</span>
+        
+      </span>
+    </div>
+    <nav class="sidebar-nav">
+      {% if user.is_admin %}
+        <p class="nav-heading">Admin</p>
+        <a href="{% url 'accounts:admin_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">Dashboard</a>
+        <a href="{% url 'accounts:teacher_list' %}" class="nav-link">Teachers</a>
+        <a href="{% url 'accounts:student_list' %}" class="nav-link">Students</a>
+        <a href="{% url 'academics:class_list' %}" class="nav-link">Classes &amp; Sections</a>
+        <a href="{% url 'academics:subject_list' %}" class="nav-link">Subjects</a>
+        <a href="{% url 'academics:teaching_assignment_list' %}" class="nav-link">Teaching Assignments</a>
+        <a href="{% url 'results:exam_list' %}" class="nav-link">Exams</a>
+        <a href="{% url 'attendance:admin_overview' %}" class="nav-link">Attendance</a>
+        <a href="{% url 'results:admin_overview' %}" class="nav-link">Results</a>
+        <a href="/admin/" class="nav-link">Django Admin</a>
+      {% elif user.is_teacher %}
+        <p class="nav-heading">Teaching</p>
+        <a href="{% url 'teacher:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Dashboard</a>
+        <a href="{% url 'assignments:teacher_list' %}" class="nav-link">Assignments</a>
+        <a href="{% url 'attendance:mark' %}" class="nav-link">Mark Attendance</a>
+        <a href="{% url 'attendance:bulk_upload' %}" class="nav-link">Bulk Upload Attendance</a>
+        <a href="{% url 'results:entry' %}" class="nav-link">Enter Results</a>
+      {% elif user.is_student %}
+        <p class="nav-heading">My Space</p>
+        <a href="{% url 'student:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Dashboard</a>
+        <a href="{% url 'assignments:student_list' %}" class="nav-link">Assignments</a>
+        <a href="{% url 'attendance:student_view' %}" class="nav-link">My Attendance</a>
+        <a href="{% url 'results:student_results' %}" class="nav-link">My Results</a>
+        <p class="nav-heading">Chat</p>
+        <a href="{% url 'chat:inbox' %}" class="nav-link">Messages</a>
+        <a href="{% url 'chat:find_students' %}" class="nav-link">Find Friends</a>
+        <a href="{% url 'chat:friend_requests' %}" class="nav-link">Friend Requests</a>
+      {% endif %}
+    </nav>
+    <div class="sidebar-footer">
+      <a href="{% url 'accounts:profile' %}" class="nav-link">My Profile</a>
+      <form method="post" action="{% url 'accounts:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="nav-link nav-link--button">Log out</button>
+      </form>
+    </div>
+  </aside>
+
+  <div class="main-column">
+    <header class="topbar">
+      <button class="sidebar-toggle" type="button" aria-label="Toggle menu">&#9776;</button>
+      <div class="topbar-title">{% block page_title %}{% endblock %}</div>
+      <div class="topbar-user">
+        <span class="role-badge role-badge--{{ user.role|lower }}">{{ user.get_role_display }}</span>
+        <span class="topbar-username">{{ user.get_full_name|default:user.username }}</span>
+      </div>
+    </header>
+
+    <main class="content">
+      {% if messages %}
+        <div class="messages">
+          {% for message in messages %}
+            <div class="alert alert--{{ message.tags|default:'info' }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+<script src="{% static 'js/main.js' %}"></script>
+{% else %}
+  {% if messages %}
+    <div class="messages messages--floating">
+      {% for message in messages %}
+        <div class="alert alert--{{ message.tags|default:'info' }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  {% block guest_content %}{% endblock %}
+{% endif %}
+{% block extra_js %}{% endblock %}
+</body>
+</html>

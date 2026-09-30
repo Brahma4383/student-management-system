@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}My results{% endblock %}
+{% block page_title %}My results{% endblock %}
+{% block content %}
+
+<div class="grid grid-cols-3 section-block">
+  <div class="stat-card">
+    <div class="stat-label">Latest exam average</div>
+    <div class="stat-value">{% if trend %}{{ trend.0.percentage }}%{% else %}-{% endif %}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Improvement vs previous exam</div>
+    <div class="stat-value">
+      {% if improvement is not None %}
+        {% if improvement > 0 %}<span style="color:var(--success)">&#9650; {{ improvement }}%</span>
+        {% elif improvement < 0 %}<span style="color:var(--danger)">&#9660; {{ improvement|cut:"-" }}%</span>
+        {% else %}<span>No change</span>{% endif %}
+      {% else %}
+        <span class="muted">Not enough data</span>
+      {% endif %}
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Exams recorded</div>
+    <div class="stat-value">{{ trend|length }}</div>
+  </div>
+</div>
+
+{% if chart_labels|length > 1 %}
+<div class="card">
+  <h3>Performance trend</h3>
+  <canvas id="improvementChart" height="90"></canvas>
+</div>
+{{ chart_labels|json_script:"chart-labels" }}
+{{ chart_data|json_script:"chart-data" }}
+{% endif %}
+
+{% for t in trend %}
+<div class="card">
+  <div class="card-header">
+    <h3>{{ t.exam.name }} <span class="muted">({{ t.exam.date }})</span></h3>
+    <span class="badge badge--info">{{ t.percentage }}% overall</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Subject</th><th>Marks</th><th>%</th><th>Remarks</th></tr></thead>
+      <tbody>
+      {% for r in t.rows %}
+        <tr>
+          <td>{{ r.subject }}</td>
+          <td>{{ r.marks_obtained }} / {{ r.max_marks }}</td>
+          <td>{{ r.percentage }}%</td>
+          <td>{{ r.remarks|default:"-" }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% empty %}
+  <div class="empty-state">No results published yet.</div>
+{% endfor %}
+
+{% endblock %}
+
+{% block extra_js %}
+{% if chart_labels|length > 1 %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script>
+  var labels = JSON.parse(document.getElementById('chart-labels').textContent);
+  var data = JSON.parse(document.getElementById('chart-data').textContent);
+  var ctx = document.getElementById('improvementChart');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Overall %',
+        data: data,
+        borderColor: '#4a5cf0',
+        backgroundColor: 'rgba(74, 92, 240, 0.12)',
+        tension: 0.3,
+        fill: true,
+        pointRadius: 4,
+      }]
+    },
+    options: {
+      scales: { y: { min: 0, max: 100 } },
+      plugins: { legend: { display: false } },
+    }
+  });
+</script>
+{% endif %}
+{% endblock %}
