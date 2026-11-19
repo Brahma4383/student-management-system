@@ -15,8 +15,8 @@ class LoginForm(AuthenticationForm):
 
 class TeacherCreateForm(forms.ModelForm):
     password = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'input'}),
-        help_text='Stored as plain text - visible to admins as-is.',
+        widget=forms.PasswordInput(attrs={'class': 'input'}),
+        help_text='Share it with the user; they can change it from their profile.',
     )
     employee_id = forms.CharField(widget=TEXT_WIDGET)
     department = forms.CharField(required=False, widget=TEXT_WIDGET)
@@ -81,8 +81,8 @@ class TeacherEditForm(forms.ModelForm):
 
 class StudentCreateForm(forms.ModelForm):
     password = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'input'}),
-        help_text='Stored as plain text - visible to admins as-is.',
+        widget=forms.PasswordInput(attrs={'class': 'input'}),
+        help_text='Share it with the user; they can change it from their profile.',
     )
     admission_number = forms.CharField(widget=TEXT_WIDGET)
     section = forms.ModelChoiceField(queryset=Section.objects.select_related('school_class').all(),
@@ -167,8 +167,8 @@ class StudentEditForm(forms.ModelForm):
 
 class ResetPasswordForm(forms.Form):
     new_password = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'input'}),
-        help_text='Stored as plain text.',
+        widget=forms.PasswordInput(attrs={'class': 'input'}),
+        help_text='At least 6 characters.',
         min_length=6,
     )
 

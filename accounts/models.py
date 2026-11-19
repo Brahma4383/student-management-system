@@ -5,13 +5,7 @@ from accounts.managers import UserManager
 
 
 class User(AbstractUser):
-    """Custom user for all three roles: admin, teacher, student.
-
-    SECURITY NOTE: per project requirements, passwords are stored in PLAIN TEXT,
-    not hashed. set_password()/check_password() below are the only two places
-    this is implemented - Django's normal auth flow (login, admin, forms) is
-    otherwise untouched, so it keeps working with plain-text values.
-    """
+    """Custom user for all three roles: admin, teacher, student."""
 
     class Role(models.TextChoices):
         ADMIN = 'ADMIN', 'Admin'
@@ -24,16 +18,6 @@ class User(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True)
 
     objects = UserManager()
-
-    def set_password(self, raw_password):
-        # Plain-text storage by design (see class docstring). No hashing.
-        self.password = raw_password
-
-    def check_password(self, raw_password):
-        return self.password == raw_password
-
-    def has_usable_password(self):
-        return True
 
     @property
     def is_admin(self):

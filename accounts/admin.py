@@ -1,13 +1,17 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 
 from accounts.models import StudentProfile, TeacherProfile, User
 
 
 @admin.register(User)
-class UserAdmin(admin.ModelAdmin):
-    # Plain admin.ModelAdmin (not auth's UserAdmin) on purpose: auth's UserAdmin
-    # renders password via a hashed-password widget, which does not apply here
-    # since passwords are stored as plain text. This shows/edits it as a normal field.
+class UserAdmin(AuthUserAdmin):
+    fieldsets = AuthUserAdmin.fieldsets + (
+        ('School', {'fields': ('role', 'phone_number', 'profile_photo')}),
+    )
+    add_fieldsets = AuthUserAdmin.add_fieldsets + (
+        ('School', {'fields': ('role',)}),
+    )
     list_display = ('username', 'get_full_name', 'email', 'role', 'is_active', 'created_at')
     list_filter = ('role', 'is_active')
     search_fields = ('username', 'first_name', 'last_name', 'email')

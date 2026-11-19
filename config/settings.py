@@ -91,17 +91,11 @@ DATABASES = {
 
 
 # Custom user model
-# Passwords for this project are intentionally stored as PLAIN TEXT (not hashed) per
-# project requirements. See accounts/models.py User.set_password()/check_password() for
-# the single place this is implemented. This is a deliberate, non-standard deviation from
-# Django security best practice - do not reuse this pattern for real user data.
 AUTH_USER_MODEL = 'accounts.User'
 
 
 # Password validation
 # https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
-# Note: these validators only enforce password *strength* at form-submission time.
-# They have no effect on how the password is stored (see AUTH_USER_MODEL note above).
 
 AUTH_PASSWORD_VALIDATORS = [
     {

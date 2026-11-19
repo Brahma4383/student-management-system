@@ -3,18 +3,8 @@
 Django-based school/college management system with role-based access for
 Admin, Teacher and Student.
 
-## ⚠️ Security note
-
-**Passwords in this project are stored in plain text, not hashed**, per project
-requirements. This is implemented in exactly one place:
-[accounts/models.py](accounts/models.py) (`User.set_password` / `User.check_password`).
-Everywhere else, Django's normal auth flow (login, sessions, admin) is untouched.
-
-Do not reuse this pattern for a system that will hold real people's data. If you
-change your mind later, deleting that override (so it falls back to
-`AbstractUser`'s default hashing) is the one-line fix — you'll need to reset
-existing users' passwords afterwards since old plain-text values won't match a
-hash.
+Passwords are hashed with Django's standard password hashers, so nobody, including
+an admin, can read a user's password. An admin can reset it instead.
 
 ## Features
 
